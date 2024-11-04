@@ -1,0 +1,74 @@
+MAKING A DIRECTORY:
+
+mkdir ~/search_replace_project
+cd ~/search_replace_project
+
+MAKING A DIRECTORY SAMPLE TEXTS:
+
+mkdir sample_texts
+cd sample_texts
+
+CREATING FILES WHERE REPLACEMENT WILL TAKE PLACE:
+
+echo "This is a test file containing the word Linux." > file1.txt
+echo "Another file with Linux and other words." > file2.txt
+echo "More content about Linux in this file." > file3.txt
+
+WRITING THE SCRIPT HERE, THAT WILL PERFORM THE REPLACEMENT:
+
+cd ~/search_replace_project
+nano search_replace.sh
+
+THE CODE OF THE SCRIPT:
+
+#!/bin/bash
+# Script to search and replace words in text files
+
+echo "Enter the word to search for:"
+read search_term
+
+echo "Enter the word to replace it with:"
+read replacement_term
+
+echo "Enter the directory path containing the files:"
+read directory_path
+
+if [ ! -d "$directory_path" ]; then
+    echo "Directory does not exist. Please check the path and try again."
+    exit 1
+fi
+
+matching_files=$(grep -rl "$search_term" "$directory_path")
+
+if [ -z "$matching_files" ]; then
+    echo "No files contain the word '$search_term'."
+    exit 0
+else
+    echo "Files containing '$search_term':"
+    echo "$matching_files"
+fi
+
+echo "Do you want to replace '$search_term' with '$replacement_term' in the above files? (y/n)"
+read confirmation
+if [ "$confirmation" != "y" ]; then
+    echo "Replacement canceled."
+    exit 0
+fi
+
+for file in $matching_files; do
+    sed -i.bak "s/$search_term/$replacement_term/g" "$file"
+    echo "Replaced in $file"
+done
+
+echo "$(date): Replaced '$search_term' with '$replacement_term' in files:" >> replacement_log.txt
+echo "$matching_files" >> replacement_log.txt
+echo "Changes logged in replacement_log.txt"
+
+GIVING PERMISSIONS TO IT:
+
+chmod +x search_replace.sh
+
+EXECUTION OF THE PROJECT:
+
+./search_replace.sh
+Enter the directory path (e.g., ~/search_replace_project/sample_texts)
